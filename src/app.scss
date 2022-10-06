@@ -1,0 +1,95 @@
+.App {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .game_Area {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    height: 250px;
+    .timers {
+      height: 100%;
+      margin-right: 10px;
+      .left-right {
+        position: relative;
+        display: flex;
+        height: 100%;
+        flex-direction: column-reverse;
+        justify-content: space-between;
+      }
+    }
+    .b-top-left {
+      position: relative;
+      display: flex;
+      height: 210%;
+      margin-left: 10px;
+
+      flex-direction: column;
+      justify-content: space-between;
+      div {
+        height: 100%;
+      }
+      button {
+        position: relative;
+        background: transparent;
+        border-radius: 10px;
+      }
+      img {
+        position: relative;
+        width: 40px;
+        height: 40px;
+      }
+    }
+  }
+}
+@media only screen and (max-width: 768px) {
+  .App {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .game_Area {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 250px;
+      .timers {
+        height: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+        .left-right {
+          position: relative;
+          display: flex;
+          margin: 0;
+          padding: 0;
+          flex-direction: row;
+        }
+      }
+      .b-top-left {
+        position: relative;
+        display: flex;
+        height: 210%;
+        margin-left: 0;
+        margin-top: 10px;
+        flex-direction: row;
+        justify-content: space-between;
+        div {
+          height: 100%;
+        }
+        button {
+          position: relative;
+          background: transparent;
+          border-radius: 10px;
+        }
+        img {
+          position: relative;
+          width: 40px;
+          height: 40px;
+        }
+      }
+    }
+  }
+}
