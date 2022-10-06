@@ -173,7 +173,7 @@ const PlayGround = () => {
   };
   useEffect(() => {
     if (browser) {
-      // getForward();
+      getForward();
     }
     const interval = setInterval(() => {
       timerA(state);
