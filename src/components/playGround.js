@@ -276,7 +276,6 @@ const PlayGround = () => {
           onMouseOverSquare={onMouseOverSquare}
           onMouseOutSquare={onMouseOutSquare}
           squareStyles={state.squareStyles}
-          // dropSquareStyle={state.dropSquareStyle}
         />
         <div className="b-top-left">
           <div>
