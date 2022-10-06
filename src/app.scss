@@ -43,6 +43,13 @@
       }
     }
   }
+  .secondary_Buttton {
+    position: relative;
+    border: 1px solid #ccc;
+    color: black;
+    width: 100%;
+    height: 35px;
+  }
 }
 @media only screen and (max-width: 768px) {
   .App {

@@ -1,9 +1,13 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Chess} from 'chess.js';
 import Chessboard from 'chessboardjsx';
+import GameOver from './gameOver';
 import farward from './assets/f.png';
 import backward from './assets/b.png';
 const PlayGround = () => {
+  /*
+   * Declaring state variables for chessboardjs
+   */
   const [state, setState] = useState({
     fen: 'start',
     pieceSquare: '',
@@ -17,22 +21,38 @@ const PlayGround = () => {
       sec: 59,
     },
   });
+  /*
+   * Declaring start variable for timer
+   */
   const [start, setStart] = useState({
-    A: true,
-    B: false,
+    A: true, // A for player white
+    B: false, // B for player black
   });
+  /*
+   * Cache browser records once for this
+   * we need to store that
+   */
   const [browser, setBrowser] = useState(true);
   const [newGame, setNewGame] = useState(new Chess());
 
   const saveForward = (state) => {
+    //a function to save the game record forward
     localStorage.setItem('currentGameState', JSON.stringify(state));
-    localStorage.setItem('currentGameStart', JSON.stringify(start));
+    localStorage.setItem(
+      'currentGameStart',
+      JSON.stringify({
+        A: start.A ? false : true,
+        B: start.B ? false : true,
+      })
+    );
   };
   const saveBackward = () => {
+    //a function to save the game record backward
     localStorage.setItem('pastGameState', JSON.stringify(state));
     localStorage.setItem('pastGameStart', JSON.stringify(start));
   };
   const getForward = useCallback(() => {
+    //memorised callback to get the game record
     const gamer = JSON.parse(localStorage.getItem('currentGame'));
     const starter = JSON.parse(localStorage.getItem('currentGameStart'));
     if (gamer && starter) {
@@ -44,6 +64,8 @@ const PlayGround = () => {
   }, [state, start]);
 
   const getBackward = () => {
+    //get game record backward
+
     const gamer = JSON.parse(localStorage.getItem('pastGame'));
     const starter = JSON.parse(localStorage.getItem('pastGameStart'));
 
@@ -55,6 +77,7 @@ const PlayGround = () => {
     }
   };
   const onSquareClick = (square) => {
+    //configure game with legal move
     saveBackward();
     setState({
       ...state,
@@ -78,6 +101,7 @@ const PlayGround = () => {
       history: newGame.history({verbose: true}),
       pieceSquare: '',
     });
+    //save record fall forward
     saveForward({
       ...state,
       fen: newGame.fen(),
@@ -86,6 +110,7 @@ const PlayGround = () => {
     });
   };
   const timerA = useCallback(() => {
+    //memorized timer for player A
     if (start.A) {
       if (state.gameA.sec === 0) {
         if (state.gameA.min > 0) {
@@ -109,6 +134,7 @@ const PlayGround = () => {
     }
   }, [state, start]);
   const timerB = useCallback(() => {
+    //memorized timer for player B
     if (start.B) {
       if (state.gameB.sec === 0) {
         if (state.gameB.min > 0) {
@@ -131,10 +157,23 @@ const PlayGround = () => {
       }
     }
   }, [state, start]);
-
+  const reset = () => {
+    setState({
+      ...state,
+      fen: 'start',
+      gameA: {
+        min: 9,
+        sec: 59,
+      },
+      gameB: {
+        min: 9,
+        sec: 59,
+      },
+    });
+  };
   useEffect(() => {
     if (browser) {
-      getForward();
+      // getForward();
     }
     const interval = setInterval(() => {
       timerA(state);
@@ -142,44 +181,56 @@ const PlayGround = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, [state, browser, getForward, timerA, timerB]);
-  return (
-    <div className="game_Area" data-testid="game_Area">
-      <div className="timers">
-        <h3>Timers</h3>
-        <div className="left-right">
+  if (
+    (state.gameA.min === 0 && state.gameA.sec === 0) ||
+    (state.gameB.min === 0 && state.gameB.sec === 0)
+  ) {
+    return (
+      <>
+        <GameOver reset={reset} winner={state.gameA.min === 0 ? 'B' : 'A'} />
+      </>
+    );
+  } else {
+    return (
+      <div className="game_Area" data-testid="game_Area">
+        <div className="timers">
+          <h3>Timers</h3>
+          <div className="left-right">
+            <div>
+              Player A: {state.gameA.min}min:{state.gameA.sec}sec
+            </div>
+            <div>
+              Player B: {state.gameB.min}min:{state.gameB.sec}sec
+            </div>
+          </div>
+        </div>
+        <Chessboard
+          id="humanVsHuman"
+          width={320}
+          calcWidth={() => {}}
+          transitionDuration={300}
+          position={state.fen}
+          boardStyle={{
+            borderRadius: '5px',
+            boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`,
+          }}
+          onSquareClick={onSquareClick}
+        />
+        <div className="b-top-left">
           <div>
-            Player A: {state.gameA.min}min:{state.gameA.sec}sec
+            <button data-testid="primary_buttons" onClick={() => getForward()}>
+              <img src={farward} alt="farward" />
+            </button>
           </div>
           <div>
-            Player B: {state.gameB.min}min:{state.gameB.sec}sec
+            <button data-testid="primary_buttons" onClick={() => getBackward()}>
+              <img src={backward} alt="backward" />
+            </button>
           </div>
         </div>
       </div>
-      <Chessboard
-        id="humanVsHuman"
-        width={320}
-        calcWidth={() => {}}
-        transitionDuration={300}
-        position={state.fen}
-        boardStyle={{
-          borderRadius: '5px',
-          boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`,
-        }}
-        onSquareClick={onSquareClick}
-      />
-      <div className="b-top-left">
-        <div>
-          <button data-testid="primary_buttons" onClick={() => getForward()}>
-            <img src={farward} alt="farward" />
-          </button>
-        </div>
-        <div>
-          <button data-testid="primary_buttons" onClick={() => getBackward()}>
-            <img src={backward} alt="backward" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
+  }
 };
+
 export default PlayGround;
