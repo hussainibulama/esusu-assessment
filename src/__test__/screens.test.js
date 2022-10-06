@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
-import App from './App';
-import PlayGround from './components/playGround';
+import App from '../App';
+import PlayGround from '../components/playGround';
 
 test('renders text on the screen and check if game area exist', () => {
   render(<App />);

@@ -1,16 +1,20 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Chess} from 'chess.js';
 import Chessboard from 'chessboardjsx';
-import GameOver from './gameOver';
+import GameOver from './util/gameOver';
 import farward from './assets/f.png';
 import backward from './assets/b.png';
+import {squareStyling} from './util/stylingGame';
 const PlayGround = () => {
   /*
    * Declaring state variables for chessboardjs
    */
   const [state, setState] = useState({
     fen: 'start',
+    dropSquareStyle: {},
+    squareStyles: {},
     pieceSquare: '',
+    square: '',
     history: [],
     gameA: {
       min: 9,
@@ -34,6 +38,60 @@ const PlayGround = () => {
    */
   const [browser, setBrowser] = useState(true);
   const [newGame, setNewGame] = useState(new Chess());
+  const removeHighlightSquare = () => {
+    setState({
+      ...state,
+      squareStyles: squareStyling({
+        pieceSquare: state.pieceSquare,
+        history: state.history,
+      }),
+    });
+  };
+  const highlightSquare = (sourceSquare, squaresToHighlight) => {
+    const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
+      (a, c) => {
+        return {
+          ...a,
+          ...{
+            [c]: {
+              background:
+                'radial-gradient(circle, #fffc00 36%, transparent 40%)',
+              borderRadius: '50%',
+            },
+          },
+          ...squareStyling({
+            history: state.history,
+            pieceSquare: state.pieceSquare,
+          }),
+        };
+      },
+      {}
+    );
+    setState({
+      ...state,
+      squareStyles: {...state.squareStyles, ...highlightStyles},
+    });
+  };
+  const onMouseOverSquare = (square) => {
+    let moves = newGame.moves({
+      square: square,
+      verbose: true,
+    });
+
+    if (moves.length === 0) {
+      return;
+    }
+
+    let squaresToHighlight = [];
+    for (var i = 0; i < moves.length; i++) {
+      squaresToHighlight.push(moves[i].to);
+    }
+
+    highlightSquare(square, squaresToHighlight);
+  };
+  const onMouseOutSquare = (square) => {
+    removeHighlightSquare(square);
+  };
 
   const saveForward = (state) => {
     //a function to save the game record forward
@@ -53,7 +111,7 @@ const PlayGround = () => {
   };
   const getForward = useCallback(() => {
     //memorised callback to get the game record
-    const gamer = JSON.parse(localStorage.getItem('currentGame'));
+    const gamer = JSON.parse(localStorage.getItem('currentGameState'));
     const starter = JSON.parse(localStorage.getItem('currentGameStart'));
     if (gamer && starter) {
       setState({...state, ...gamer});
@@ -66,7 +124,7 @@ const PlayGround = () => {
   const getBackward = () => {
     //get game record backward
 
-    const gamer = JSON.parse(localStorage.getItem('pastGame'));
+    const gamer = JSON.parse(localStorage.getItem('pastGameState'));
     const starter = JSON.parse(localStorage.getItem('pastGameStart'));
 
     if (gamer && starter) {
@@ -101,7 +159,7 @@ const PlayGround = () => {
       history: newGame.history({verbose: true}),
       pieceSquare: '',
     });
-    //save record fall forward
+    // save record fall forward
     saveForward({
       ...state,
       fen: newGame.fen(),
@@ -215,6 +273,10 @@ const PlayGround = () => {
             boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`,
           }}
           onSquareClick={onSquareClick}
+          onMouseOverSquare={onMouseOverSquare}
+          onMouseOutSquare={onMouseOutSquare}
+          squareStyles={state.squareStyles}
+          // dropSquareStyle={state.dropSquareStyle}
         />
         <div className="b-top-left">
           <div>
