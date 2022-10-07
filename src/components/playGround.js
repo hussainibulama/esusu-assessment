@@ -145,6 +145,7 @@ const PlayGround = () => {
       from: state.pieceSquare,
       to: square,
     });
+
     if (move === null) {
       return;
     }
@@ -228,6 +229,11 @@ const PlayGround = () => {
         sec: 59,
       },
     });
+    localStorage.removeItem('currentGameState');
+    localStorage.removeItem('currentGameStart');
+    localStorage.removeItem('pastGameState');
+    localStorage.removeItem('pastGameStart');
+    window.location.reload();
   };
   useEffect(() => {
     if (browser) {
@@ -266,6 +272,8 @@ const PlayGround = () => {
           id="humanVsHuman"
           width={320}
           calcWidth={() => {}}
+          draggable={false}
+          undo={true}
           transitionDuration={300}
           position={state.fen}
           boardStyle={{
