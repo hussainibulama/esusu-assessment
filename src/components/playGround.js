@@ -136,7 +136,6 @@ const PlayGround = () => {
   };
   const onSquareClick = (square) => {
     //configure game with legal move
-
     saveBackward();
     setState({
       ...state,
@@ -235,7 +234,7 @@ const PlayGround = () => {
     localStorage.removeItem('pastGameStart');
     window.location.reload();
   };
-  const isOver = () => {
+  const isOver = useCallback(() => {
     const over = newGame.isGameOver();
     if (over) {
       if (start.A) {
@@ -258,7 +257,7 @@ const PlayGround = () => {
         });
       }
     }
-  };
+  }, [state, start, newGame]);
   useEffect(() => {
     isOver();
     if (browser) {
@@ -270,7 +269,7 @@ const PlayGround = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [state, browser, getForward, timerA, timerB]);
+  }, [isOver, state, browser, getForward, timerA, timerB]);
   if (
     (state.gameA.min === 0 && state.gameA.sec === 0) ||
     (state.gameB.min === 0 && state.gameB.sec === 0)
