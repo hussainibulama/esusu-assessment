@@ -312,13 +312,21 @@ const PlayGround = () => {
         />
         <div className="b-top-left">
           <div>
-            <button data-testid="primary_buttons" onClick={() => getForward()}>
-              <img src={farward} alt="farward" />
+            <button
+              name="farward"
+              data-testid="primary_buttons"
+              onClick={() => getForward()}
+            >
+              <img name="farward" src={farward} alt="farward" />
             </button>
           </div>
           <div>
-            <button data-testid="primary_buttons" onClick={() => getBackward()}>
-              <img src={backward} alt="backward" />
+            <button
+              name="backward"
+              data-testid="primary_buttons"
+              onClick={() => getBackward()}
+            >
+              <img name="backward" src={backward} alt="backward" />
             </button>
           </div>
         </div>
